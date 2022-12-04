@@ -1,3 +1,54 @@
+use clap::Parser;
+use ed_2022::{day1, day2};
+use std::fs;
+
+/// Advent of code 2022
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// AOC day to run
+    #[arg(short, long)]
+    day: u8,
+
+    /// Part of the problem
+    #[arg(short, long)]
+    part: u8,
+}
+
 fn main() {
-    println!("Hello, world!");
+    let args = Args::parse();
+
+    match args.day {
+        1 => {
+            let file_path = "./data/day1_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+            match args.part {
+                1 => {
+                    println!("{}", day1::max_calories(contents))
+                }
+                2 => {
+                    println!("{}", day1::top_three_calories(contents))
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        2 => {
+            let file_path = "./data/day2_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+            match args.part {
+                1 => {
+                    println!("{}", day2::total_score_own_strat(contents))
+                }
+                2 => {
+                    println!("{}", day2::total_score_elf_strat(contents))
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        _ => println!("There are no problems for that day"),
+    }
 }
