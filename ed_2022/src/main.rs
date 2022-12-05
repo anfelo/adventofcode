@@ -1,5 +1,5 @@
 use clap::Parser;
-use ed_2022::{day1, day2};
+use ed_2022::{day1, day2, day3};
 use std::fs;
 
 /// Advent of code 2022
@@ -45,6 +45,18 @@ fn main() {
                 }
                 2 => {
                     println!("{}", day2::total_score_elf_strat(contents))
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        3 => {
+            let file_path = "./data/day3_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+            match args.part {
+                1 => {
+                    println!("{}", day3::sum_misplaced_prio(contents))
                 }
                 _ => println!("There is no part {}", args.part),
             }
