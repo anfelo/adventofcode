@@ -1,31 +1,24 @@
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Rucksack {
-    pub left_pocket: Vec<Item>,
-    pub right_pocket: Vec<Item>,
+    pub items: Vec<Item>,
 }
 
 impl Rucksack {
     pub fn new(items: String) -> Rucksack {
         let item_names: Vec<&str> = items.split("").filter(|i| !i.is_empty()).collect();
-        let pockets: Vec<Vec<Item>> = item_names
-            .chunks(item_names.len() / 2)
-            .map(|s| s.iter().map(|i| Item::new(i)).collect())
-            .collect();
+        let all_items: Vec<Item> = item_names.iter().map(|i| Item::new(i)).collect();
 
-        let left_pocket = pockets.get(0).unwrap().to_vec();
-        let right_pocket = pockets.get(1).unwrap().to_vec();
-
-        Rucksack {
-            left_pocket,
-            right_pocket,
-        }
+        Rucksack { items: all_items }
     }
 
     pub fn get_misplaced_items(&self) -> Vec<Item> {
         let mut misplaced: Vec<Item> = vec![];
 
-        for i in &self.left_pocket {
-            for j in &self.right_pocket {
+        let left_pocket = self.get_left_pocket();
+        let right_pocket = self.get_right_pocket();
+
+        for i in &left_pocket {
+            for j in &right_pocket {
                 if i.name == j.name && !misplaced.contains(i) {
                     misplaced.push(i.clone());
                 }
@@ -33,6 +26,26 @@ impl Rucksack {
         }
 
         misplaced
+    }
+
+    pub fn get_left_pocket(&self) -> Vec<Item> {
+        let pockets: Vec<Vec<Item>> = self
+            .items
+            .chunks(self.items.len() / 2)
+            .map(|s| s.into())
+            .collect();
+
+        pockets.get(0).unwrap().to_vec()
+    }
+
+    pub fn get_right_pocket(&self) -> Vec<Item> {
+        let pockets: Vec<Vec<Item>> = self
+            .items
+            .chunks(self.items.len() / 2)
+            .map(|s| s.into())
+            .collect();
+
+        pockets.get(1).unwrap().to_vec()
     }
 }
 
@@ -48,6 +61,33 @@ impl Item {
             prio: get_item_prio(item_name),
             name: item_name.to_owned(),
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct ElfGroup {
+    pub rucksacks: [Rucksack; 3],
+}
+
+impl ElfGroup {
+    pub fn new(elf1: Rucksack, elf2: Rucksack, elf3: Rucksack) -> ElfGroup {
+        ElfGroup {
+            rucksacks: [elf1, elf2, elf3],
+        }
+    }
+
+    pub fn get_item_badge(&self) -> Option<Item> {
+        let elf1 = &self.rucksacks[0];
+        let elf2 = &self.rucksacks[1];
+        let elf3 = &self.rucksacks[2];
+
+        for item in &elf1.items {
+            if elf2.items.contains(&item) && elf3.items.contains(&item) {
+                return Some(item.to_owned());
+            }
+        }
+
+        None
     }
 }
 
@@ -85,6 +125,32 @@ pub fn sum_misplaced_prio(data: String) -> i32 {
     sum
 }
 
+pub fn sum_elf_groups_prio(data: String) -> i32 {
+    let rucksacks: Vec<Rucksack> = data
+        .lines()
+        .map(|line| Rucksack::new(line.to_owned()))
+        .collect();
+    let rucksacks_groups: Vec<Vec<Rucksack>> = rucksacks.chunks(3).map(|r| r.into()).collect();
+
+    match rucksacks_groups
+        .iter()
+        .map(|g| {
+            ElfGroup::new(
+                g.get(0).unwrap().to_owned(),
+                g.get(1).unwrap().to_owned(),
+                g.get(2).unwrap().to_owned(),
+            )
+            .get_item_badge()
+            .unwrap()
+            .prio
+        })
+        .reduce(|a, b| a + b)
+    {
+        Some(s) => s,
+        None => 0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -110,6 +176,26 @@ CrZsJsPPZsGzwwsLwLmpwMDw",
         };
 
         let result = sum_misplaced_prio(test_case.input);
+
+        assert_eq!(result, test_case.expected);
+    }
+
+    #[test]
+    fn it_should_return_total_elf_group_prio() {
+        let contents = String::from(
+            "vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw",
+        );
+        let test_case = TestCase {
+            input: contents,
+            expected: 70,
+        };
+
+        let result = sum_elf_groups_prio(test_case.input);
 
         assert_eq!(result, test_case.expected);
     }

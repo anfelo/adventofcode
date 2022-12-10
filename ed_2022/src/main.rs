@@ -1,5 +1,5 @@
 use clap::Parser;
-use ed_2022::{day1, day2, day3};
+use ed_2022::{day1, day2, day3, day4};
 use std::fs;
 
 /// Advent of code 2022
@@ -57,6 +57,24 @@ fn main() {
             match args.part {
                 1 => {
                     println!("{}", day3::sum_misplaced_prio(contents))
+                }
+                2 => {
+                    println!("{}", day3::sum_elf_groups_prio(contents))
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        4 => {
+            let file_path = "./data/day4_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+            match args.part {
+                1 => {
+                    println!("{}", day4::fully_covered_count(contents))
+                }
+                2 => {
+                    println!("{}", day4::overlaping_count(contents))
                 }
                 _ => println!("There is no part {}", args.part),
             }
