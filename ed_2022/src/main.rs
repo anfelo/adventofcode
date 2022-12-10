@@ -1,5 +1,5 @@
 use clap::Parser;
-use ed_2022::{day1, day2, day3, day4};
+use ed_2022::{day1, day2, day3, day4, day5};
 use std::fs;
 
 /// Advent of code 2022
@@ -75,6 +75,21 @@ fn main() {
                 }
                 2 => {
                     println!("{}", day4::overlaping_count(contents))
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        5 => {
+            let file_path = "./data/day5_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+            match args.part {
+                1 => {
+                    println!("{}", day5::get_top_crates(contents))
+                }
+                2 => {
+                    println!("{}", day5::get_top_crates_9001(contents))
                 }
                 _ => println!("There is no part {}", args.part),
             }
