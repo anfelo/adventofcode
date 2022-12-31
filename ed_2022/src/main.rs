@@ -1,5 +1,5 @@
 use clap::Parser;
-use ed_2022::{day1, day2, day3, day4, day5, day6, day7};
+use ed_2022::{day1, day2, day3, day4, day5, day6, day7, day8};
 use std::fs;
 
 /// Advent of code 2022
@@ -120,6 +120,21 @@ fn main() {
                 }
                 2 => {
                     println!("{}", day7::dir_size_to_free(contents, 70000000, 30000000));
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        8 => {
+            let file_path = "./data/day8_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+            match args.part {
+                1 => {
+                    println!("{}", day8::trees_visible(contents))
+                }
+                2 => {
+                    // println!("{}", day8::trees_visible(contents));
                 }
                 _ => println!("There is no part {}", args.part),
             }
