@@ -134,7 +134,7 @@ fn main() {
                     println!("{}", day8::trees_visible(contents))
                 }
                 2 => {
-                    // println!("{}", day8::trees_visible(contents));
+                    println!("{}", day8::max_visible_trees(contents));
                 }
                 _ => println!("There is no part {}", args.part),
             }
