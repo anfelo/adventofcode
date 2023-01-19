@@ -26,12 +26,12 @@ pub struct Assignment {
 impl Assignment {
     pub fn new(line: String) -> Assignment {
         let sections: Vec<Section> = line
-            .split(",")
+            .split(',')
             .map(|s| {
-                let section: Vec<&str> = s.split("-").collect();
+                let section: Vec<&str> = s.split('-').collect();
 
                 Section::new(
-                    section.get(0).unwrap().parse().unwrap(),
+                    section.first().unwrap().parse().unwrap(),
                     section.get(1).unwrap().parse().unwrap(),
                 )
             })
@@ -39,10 +39,9 @@ impl Assignment {
 
         Assignment {
             pair: [
-                sections.get(0).unwrap().to_owned(),
+                sections.first().unwrap().to_owned(),
                 sections.get(1).unwrap().to_owned(),
-            ]
-            .into(),
+            ],
         }
     }
 }

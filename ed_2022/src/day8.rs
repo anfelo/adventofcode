@@ -13,8 +13,7 @@ pub fn trees_visible(data: String) -> i64 {
     get_trees_map(data)
         .values()
         .filter(|v| v.is_visible)
-        .collect::<Vec<&Tree>>()
-        .len() as i64
+        .count() as i64
 }
 
 pub fn max_visible_trees(data: String) -> i64 {
@@ -22,12 +21,12 @@ pub fn max_visible_trees(data: String) -> i64 {
         .values()
         .map(|v| v.left * v.right * v.top * v.bottom)
         .max()
-        .unwrap() as i64
+        .unwrap()
 }
 
 fn is_visible(items: &[i64], item: &i64) -> bool {
     let mut result = true;
-    for other in items.into_iter() {
+    for other in items.iter() {
         if other >= item {
             result = false;
             break;
@@ -38,7 +37,7 @@ fn is_visible(items: &[i64], item: &i64) -> bool {
 
 fn num_visible(items: &[i64], item: &i64) -> i64 {
     let mut count = 0;
-    for other in items.into_iter() {
+    for other in items.iter() {
         count += 1;
         if other >= item {
             break;
@@ -60,8 +59,7 @@ fn get_trees_map(data: String) -> HashMap<String, Tree> {
         .collect();
     let mut trees_visible: HashMap<String, Tree> = HashMap::new();
 
-    for i in 0..rows.len() {
-        let row = &rows[i];
+    for (i, row) in rows.iter().enumerate() {
         let mut col_idx = 0;
 
         while col_idx < row.len() {
@@ -77,8 +75,8 @@ fn get_trees_map(data: String) -> HashMap<String, Tree> {
             let num_visible_right = num_visible(right_slice, &row[col_idx]);
 
             if col_idx > 0 {
-                visible_left = is_visible(&left_slice, &row[col_idx]);
-                visible_right = is_visible(&right_slice, &row[col_idx]);
+                visible_left = is_visible(left_slice, &row[col_idx]);
+                visible_right = is_visible(right_slice, &row[col_idx]);
             }
 
             trees_visible
@@ -118,8 +116,8 @@ fn get_trees_map(data: String) -> HashMap<String, Tree> {
             let num_visible_bottom = num_visible(bottom_slice, &column[row_idx]);
 
             if row_idx > 0 {
-                visible_top = is_visible(&top_slice, &column[row_idx]);
-                visible_bottom = is_visible(&bottom_slice, &column[row_idx]);
+                visible_top = is_visible(top_slice, &column[row_idx]);
+                visible_bottom = is_visible(bottom_slice, &column[row_idx]);
             }
 
             trees_visible

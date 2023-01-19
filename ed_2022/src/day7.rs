@@ -15,7 +15,7 @@ pub fn dir_size_to_free(data: String, disk_space: i64, unused: i64) -> i64 {
 
     Vec::from_iter(dirs_sizes.values().map(|s| s.to_owned()))
         .into_iter()
-        .filter(|s| s + &available_space >= unused)
+        .filter(|s| s + available_space >= unused)
         .min()
         .unwrap()
 }
@@ -26,16 +26,16 @@ fn get_dir_sizes(data: String) -> HashMap<String, i64> {
     let mut curr_dir: Vec<String> = vec![];
 
     for line in lines {
-        let line_parts: Vec<&str> = line.split(" ").collect();
+        let line_parts: Vec<&str> = line.split(' ').collect();
 
-        if line.starts_with("$") {
+        if line.starts_with('$') {
             if line_parts.get(1).unwrap() == &"cd" {
                 if line_parts.get(2).unwrap() == &".." {
                     curr_dir.pop();
                 } else if line_parts.get(2).unwrap() != &"/" {
                     curr_dir.push(format!("{}/", line_parts.get(2).unwrap()));
                 } else {
-                    curr_dir.push(format!("{}", line_parts.get(2).unwrap()));
+                    curr_dir.push(line_parts.get(2).unwrap().to_string());
                     dirs_sizes.insert(curr_dir.join(""), 0);
                 }
             }
@@ -50,7 +50,7 @@ fn get_dir_sizes(data: String) -> HashMap<String, i64> {
 
             while index < curr_dir.len() {
                 if let Some(sum) = dirs_sizes.get_mut(&dir_slice[0..index + 1].join("")) {
-                    *sum += line_parts.get(0).unwrap().parse::<i64>().unwrap();
+                    *sum += line_parts.first().unwrap().parse::<i64>().unwrap();
                 }
 
                 index += 1;

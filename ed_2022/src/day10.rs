@@ -14,20 +14,15 @@ pub fn calculate_signal_strengths(data: String) -> i64 {
     let mut register = 1;
     let signals = [20, 60, 100, 140, 180, 220];
 
-    loop {
-        match instructions.get(instr_idx) {
-            Some(i) => {
-                if signals.contains(&cycle) {
-                    strength += register * cycle;
-                }
+    while let Some(i) = instructions.get(instr_idx) {
+        if signals.contains(&cycle) {
+            strength += register * cycle;
+        }
 
-                if i.cycles == cycles_processed {
-                    instr_idx += 1;
-                    cycles_processed = 0;
-                    register += i.amount;
-                }
-            }
-            None => break,
+        if i.cycles == cycles_processed {
+            instr_idx += 1;
+            cycles_processed = 0;
+            register += i.amount;
         }
 
         cycle += 1;
@@ -48,17 +43,13 @@ pub fn get_crt_pixels(data: String) -> String {
     let mut crt_screen: Vec<Vec<&str>> = vec![vec!["#"]];
     let mut curr_row = 0;
 
-    loop {
-        match instructions.get(instr_idx) {
-            Some(i) => {
-                if i.cycles == cycles_processed {
-                    instr_idx += 1;
-                    cycles_processed = 0;
-                    register += i.amount;
-                }
-            }
-            None => break,
+    while let Some(v) = instructions.get(instr_idx) {
+        if v.cycles == cycles_processed {
+            instr_idx += 1;
+            cycles_processed = 0;
+            register += v.amount;
         }
+
         let offset = curr_row * crt_max_cols;
         let cursor = [
             &register - 1 + offset,
@@ -75,7 +66,7 @@ pub fn get_crt_pixels(data: String) -> String {
         cycle += 1;
         cycles_processed += 1;
 
-        if cycle >= (crt_max_cols * (curr_row + 1)) as i64 {
+        if cycle >= (crt_max_cols * (curr_row + 1)) {
             crt_screen[curr_row as usize].push("\n");
             curr_row += 1;
             crt_screen.push(vec![]);
@@ -92,7 +83,7 @@ pub fn get_crt_pixels(data: String) -> String {
 fn get_instructions(data: String) -> Vec<Instruction> {
     data.lines()
         .map(|l| {
-            let parts: Vec<&str> = l.split(" ").collect();
+            let parts: Vec<&str> = l.split(' ').collect();
             match parts[0] {
                 "addx" => Instruction {
                     amount: parts[1].parse::<i64>().unwrap(),

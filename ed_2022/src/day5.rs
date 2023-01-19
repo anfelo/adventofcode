@@ -30,7 +30,7 @@ impl Instruction {
 
 pub fn get_top_crates(data: String) -> String {
     let mut stacks: Vec<CrateStack> = get_crate_stacks(data.to_owned());
-    let instructions = get_crane_instructions(data.to_owned());
+    let instructions = get_crane_instructions(data);
 
     for instr in instructions {
         let from_stack = stacks.get_mut((instr.from as usize) - 1).unwrap();
@@ -56,7 +56,7 @@ pub fn get_top_crates(data: String) -> String {
 
 pub fn get_top_crates_9001(data: String) -> String {
     let mut stacks: Vec<CrateStack> = get_crate_stacks(data.to_owned());
-    let instructions = get_crane_instructions(data.to_owned());
+    let instructions = get_crane_instructions(data);
 
     for instr in instructions {
         let from_stack = stacks.get_mut((instr.from as usize) - 1).unwrap();
@@ -82,7 +82,7 @@ pub fn get_top_crates_9001(data: String) -> String {
 
 fn get_crate_stacks(data: String) -> Vec<CrateStack> {
     let parts: Vec<&str> = data.split("\n\n").collect();
-    let crate_stacks_data: Vec<&str> = parts.first().unwrap().lines().map(|l| l.into()).collect();
+    let crate_stacks_data: Vec<&str> = parts.first().unwrap().lines().collect();
     let stack_numbers: Vec<&str> = crate_stacks_data.last().unwrap().split("").collect();
     let mut stacks: Vec<CrateStack> = stack_numbers
         .iter()

@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 pub fn total_score_own_strat(data: String) -> i32 {
-    let plays: Vec<&str> = data.split("\n").filter(|p| !p.is_empty()).collect();
+    let plays: Vec<&str> = data.split('\n').filter(|p| !p.is_empty()).collect();
     let mut score: i32 = 0;
 
     for play in &plays {
-        let players: Vec<&str> = play.split(" ").collect();
+        let players: Vec<&str> = play.split(' ').collect();
         let own_hand = players[1];
 
         score += get_hand_value(own_hand);
@@ -16,11 +16,11 @@ pub fn total_score_own_strat(data: String) -> i32 {
 }
 
 pub fn total_score_elf_strat(data: String) -> i32 {
-    let plays: Vec<&str> = data.split("\n").filter(|p| !p.is_empty()).collect();
+    let plays: Vec<&str> = data.split('\n').filter(|p| !p.is_empty()).collect();
     let mut score: i32 = 0;
 
     for play in &plays {
-        let players: Vec<&str> = play.split(" ").collect();
+        let players: Vec<&str> = play.split(' ').collect();
         let opponent_hand = players[0];
         let strat = players[1];
         let own_hand = &get_own_hand(opponent_hand, strat);
@@ -36,32 +36,32 @@ fn get_own_hand(opponent_hand: &str, strat: &str) -> String {
     match strat {
         "X" => {
             if opponent_hand == "A" {
-                return "Z".to_owned();
+                "Z".to_owned()
             } else if opponent_hand == "B" {
-                return "X".to_owned();
+                "X".to_owned()
             } else {
-                return "Y".to_owned();
+                "Y".to_owned()
             }
         }
         "Y" => {
             if opponent_hand == "A" {
-                return "X".to_owned();
+                "X".to_owned()
             } else if opponent_hand == "B" {
-                return "Y".to_owned();
+                "Y".to_owned()
             } else {
-                return "Z".to_owned();
+                "Z".to_owned()
             }
         }
         "Z" => {
             if opponent_hand == "A" {
-                return "Y".to_owned();
+                "Y".to_owned()
             } else if opponent_hand == "B" {
-                return "Z".to_owned();
+                "Z".to_owned()
             } else {
-                return "X".to_owned();
+                "X".to_owned()
             }
         }
-        _ => return "".to_owned(),
+        _ => "".to_owned(),
     }
 }
 

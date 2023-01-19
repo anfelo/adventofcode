@@ -82,7 +82,7 @@ impl ElfGroup {
         let elf3 = &self.rucksacks[2];
 
         for item in &elf1.items {
-            if elf2.items.contains(&item) && elf3.items.contains(&item) {
+            if elf2.items.contains(item) && elf3.items.contains(item) {
                 return Some(item.to_owned());
             }
         }
@@ -113,7 +113,7 @@ pub fn sum_misplaced_prio(data: String) -> i32 {
         // get misplaced items for rucksack
         let misplaced_items = rucksack.get_misplaced_items();
         // sum the prio for each item
-        if misplaced_items.len() > 0 {
+        if !misplaced_items.is_empty() {
             sum += misplaced_items
                 .into_iter()
                 .map(|a| a.prio)
@@ -132,7 +132,7 @@ pub fn sum_elf_groups_prio(data: String) -> i32 {
         .collect();
     let rucksacks_groups: Vec<Vec<Rucksack>> = rucksacks.chunks(3).map(|r| r.into()).collect();
 
-    match rucksacks_groups
+    rucksacks_groups
         .iter()
         .map(|g| {
             ElfGroup::new(
@@ -145,10 +145,7 @@ pub fn sum_elf_groups_prio(data: String) -> i32 {
             .prio
         })
         .reduce(|a, b| a + b)
-    {
-        Some(s) => s,
-        None => 0,
-    }
+        .unwrap_or(0)
 }
 
 #[cfg(test)]

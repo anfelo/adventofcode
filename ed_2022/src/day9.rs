@@ -32,10 +32,10 @@ impl Knot {
         if x_diff.abs() > 1 {
             self.coord.x += if x_diff > 1 { 1 } else { -1 };
 
-            if prev.coord.y - self.coord.y < 0 {
-                self.coord.y -= 1;
-            } else if prev.coord.y - self.coord.y > 0 {
-                self.coord.y += 1;
+            self.coord.y = match prev.coord.y.cmp(&self.coord.y) {
+                std::cmp::Ordering::Less => self.coord.y - 1,
+                std::cmp::Ordering::Greater => self.coord.y + 1,
+                std::cmp::Ordering::Equal => self.coord.y,
             }
         }
 
@@ -43,10 +43,10 @@ impl Knot {
         if y_diff.abs() > 1 {
             self.coord.y += if y_diff > 1 { 1 } else { -1 };
 
-            if prev.coord.x - self.coord.x < 0 {
-                self.coord.x -= 1;
-            } else if prev.coord.x - self.coord.x > 0 {
-                self.coord.x += 1;
+            self.coord.x = match prev.coord.x.cmp(&self.coord.x) {
+                std::cmp::Ordering::Less => self.coord.x - 1,
+                std::cmp::Ordering::Greater => self.coord.x + 1,
+                std::cmp::Ordering::Equal => self.coord.x,
             }
         }
     }
@@ -102,7 +102,7 @@ pub fn tail_unique_visits(data: String, knots_num: i64) -> i64 {
             }
 
             for knot in knots.iter_mut() {
-                if knot.char != "H".to_string() {
+                if knot.char != "H" {
                     knot.follow(prev_knot);
                 }
                 prev_knot = knot;
@@ -123,26 +123,26 @@ pub fn tail_unique_visits(data: String, knots_num: i64) -> i64 {
     tail_visited.keys().len() as i64
 }
 
-fn print_rope_map(board: &Board, knots: &Vec<Knot>, visited: &HashMap<String, bool>) {
-    for y in board.min.y..board.max.y + 1 {
-        for x in board.min.x..board.max.x + 1 {
-            let mut item = ".";
-
-            if visited.contains_key(&format!("{},{}", x, y)) {
-                item = "#";
-            }
-
-            for knot in knots.iter().rev() {
-                if knot.coord.y == y && knot.coord.x == x {
-                    item = &knot.char;
-                }
-            }
-
-            print!("{}", item);
-        }
-        println!("")
-    }
-}
+// fn print_rope_map(board: &Board, knots: &Vec<Knot>, visited: &HashMap<String, bool>) {
+//     for y in board.min.y..board.max.y + 1 {
+//         for x in board.min.x..board.max.x + 1 {
+//             let mut item = ".";
+//
+//             if visited.contains_key(&format!("{},{}", x, y)) {
+//                 item = "#";
+//             }
+//
+//             for knot in knots.iter().rev() {
+//                 if knot.coord.y == y && knot.coord.x == x {
+//                     item = &knot.char;
+//                 }
+//             }
+//
+//             print!("{}", item);
+//         }
+//         println!("")
+//     }
+// }
 
 fn get_initial_knots(num: i64) -> Vec<Knot> {
     let mut knots: Vec<Knot> = vec![];
@@ -173,11 +173,11 @@ fn get_motions(data: String) -> Vec<Motion> {
             let line_parts: Vec<&str> = l.split(' ').collect();
             Motion {
                 steps: line_parts.get(1).unwrap().parse::<i64>().unwrap(),
-                direction: match line_parts.get(0).unwrap() {
-                    &"R" => MotionDirection::Right,
-                    &"L" => MotionDirection::Left,
-                    &"U" => MotionDirection::Up,
-                    &"D" => MotionDirection::Down,
+                direction: match *line_parts.first().unwrap() {
+                    "R" => MotionDirection::Right,
+                    "L" => MotionDirection::Left,
+                    "U" => MotionDirection::Up,
+                    "D" => MotionDirection::Down,
                     _ => panic!("not valid motion direction"),
                 },
             }

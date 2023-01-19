@@ -28,11 +28,11 @@ pub struct Test {
     throw_false: usize,
 }
 
-pub fn monkey_business_level(monkeys: &mut Vec<Monkey>, rounds: u64, with_relief: bool) -> u64 {
+pub fn monkey_business_level(monkeys: &mut [Monkey], rounds: u64, with_relief: bool) -> u64 {
     for round in 0..rounds {
-        let monkeys_clone = monkeys.clone();
+        let monkeys_clone = monkeys.to_owned();
         for (i, monkey) in monkeys_clone.iter().enumerate() {
-            while monkeys[i].items.len() > 0 {
+            while !monkeys[i].items.is_empty() {
                 let item = monkeys[i].items.remove(0);
 
                 let left_op = match monkey.operation.left {
@@ -75,7 +75,7 @@ pub fn monkey_business_level(monkeys: &mut Vec<Monkey>, rounds: u64, with_relief
             "round {} - {:?}",
             round,
             monkeys
-                .into_iter()
+                .iter()
                 .map(|m| m.inspected_count)
                 .collect::<Vec<u64>>()
         );
@@ -102,7 +102,7 @@ pub fn parse_input(data: String) -> Vec<Monkey> {
             let op_parts: Vec<&str> = lines[2]
                 .strip_prefix("  Operation: new = ")
                 .unwrap()
-                .split(" ")
+                .split(' ')
                 .collect();
             let operation = Operation {
                 op_type: match op_parts[1] {

@@ -38,7 +38,7 @@ pub fn max_calories(data: String) -> i32 {
 
     for per_elf in &elfs_calories {
         let calories: Vec<i32> = per_elf
-            .split("\n")
+            .split('\n')
             .filter(|cal| !cal.is_empty())
             .map(|cal| cal.trim().parse::<i32>().unwrap())
             .collect();
@@ -69,7 +69,7 @@ pub fn top_three_calories(data: String) -> i32 {
 
     for per_elf in &elfs_calories {
         let calories: Vec<i32> = per_elf
-            .split("\n")
+            .split('\n')
             .filter(|cal| !cal.is_empty())
             .map(|cal| cal.trim().parse::<i32>().unwrap())
             .collect();
