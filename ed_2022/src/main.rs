@@ -1,5 +1,5 @@
 use clap::Parser;
-use ed_2022::{day1, day2, day3, day4, day5, day6, day7, day8, day9, day10};
+use ed_2022::{day1, day10, day11, day2, day3, day4, day5, day6, day7, day8, day9};
 use std::fs;
 
 /// Advent of code 2022
@@ -165,6 +165,25 @@ fn main() {
                 }
                 2 => {
                     println!("{}", day10::get_crt_pixels(contents))
+                }
+                _ => println!("There is no part {}", args.part),
+            }
+        }
+        11 => {
+            let file_path = "./data/day11_input.txt";
+            let contents =
+                fs::read_to_string(file_path).expect("Should have been able to read the file");
+            let mut monkeys = day11::parse_input(contents);
+
+            match args.part {
+                1 => {
+                    println!("{}", day11::monkey_business_level(&mut monkeys, 20, true))
+                }
+                2 => {
+                    println!(
+                        "{}",
+                        day11::monkey_business_level(&mut monkeys, 10000, false)
+                    )
                 }
                 _ => println!("There is no part {}", args.part),
             }
