@@ -29,7 +29,7 @@ pub struct Test {
 }
 
 pub fn monkey_business_level(monkeys: &mut [Monkey], rounds: u64, with_relief: bool) -> u64 {
-    for round in 0..rounds {
+    for _ in 0..rounds {
         let monkeys_clone = monkeys.to_owned();
         for (i, monkey) in monkeys_clone.iter().enumerate() {
             while !monkeys[i].items.is_empty() {
@@ -51,16 +51,11 @@ pub fn monkey_business_level(monkeys: &mut [Monkey], rounds: u64, with_relief: b
                     OpType::Divide => left_op / right_op,
                 };
 
-                let mut new_worry_level = new_item;
-                if with_relief {
-                    new_worry_level = ((new_item as f64) / 3.0).floor() as u64;
+                let new_worry_level = if with_relief {
+                    ((new_item as f64) / 3.0).floor() as u64
                 } else {
-                    new_worry_level = if new_worry_level % monkey.test.divisible_by == 0 {
-                        new_worry_level / monkey.test.divisible_by
-                    } else {
-                        new_worry_level
-                    };
-                }
+                     new_item % monkeys.iter().map(|m| m.test.divisible_by).product::<u64>()
+                };
 
                 if new_worry_level % monkey.test.divisible_by == 0 {
                     monkeys[monkey.test.throw_true].items.push(new_worry_level);
@@ -71,18 +66,10 @@ pub fn monkey_business_level(monkeys: &mut [Monkey], rounds: u64, with_relief: b
                 monkeys[i].inspected_count += 1;
             }
         }
-        println!(
-            "round {} - {:?}",
-            round,
-            monkeys
-                .iter()
-                .map(|m| m.inspected_count)
-                .collect::<Vec<u64>>()
-        );
     }
 
     monkeys.sort_by(|a, b| b.inspected_count.cmp(&a.inspected_count));
-    monkeys[0].inspected_count * monkeys[1].inspected_count
+    monkeys.iter().take(2).map(|m| m.inspected_count).product()
 }
 
 pub fn parse_input(data: String) -> Vec<Monkey> {
@@ -271,27 +258,27 @@ Monkey 3:
         assert_eq!(result, test_case.expected);
     }
 
-    // #[test]
-    // fn it_should_calculate_monkey_business_level_10000_rounds_no_relief() {
-    //     let mut test_case = TestCase {
-    //         input: parse_input(get_data()),
-    //         expected: 2713310158,
-    //     };
-    //
-    //     let result = monkey_business_level(&mut test_case.input, 10000, false);
-    //
-    //     assert_eq!(result, test_case.expected);
-    // }
+    #[test]
+    fn it_should_calculate_monkey_business_level_10000_rounds_no_relief() {
+        let mut test_case = TestCase {
+            input: parse_input(get_data()),
+            expected: 2713310158,
+        };
 
-    // #[test]
-    // fn it_should_calculate_monkey_business_level_20_rounds_no_relief() {
-    //     let mut test_case = TestCase {
-    //         input: parse_input(get_data()),
-    //         expected: 10197,
-    //     };
-    //
-    //     let result = monkey_business_level(&mut test_case.input, 20, false);
-    //
-    //     assert_eq!(result, test_case.expected);
-    // }
+        let result = monkey_business_level(&mut test_case.input, 10000, false);
+
+        assert_eq!(result, test_case.expected);
+    }
+
+    #[test]
+    fn it_should_calculate_monkey_business_level_20_rounds_no_relief() {
+        let mut test_case = TestCase {
+            input: parse_input(get_data()),
+            expected: 10197,
+        };
+
+        let result = monkey_business_level(&mut test_case.input, 20, false);
+
+        assert_eq!(result, test_case.expected);
+    }
 }
