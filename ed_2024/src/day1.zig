@@ -1,7 +1,9 @@
 const std = @import("std");
 const expect = std.testing.expect;
 
-pub fn day1(path: []const u8) !usize {
+const DataInfo = struct { totalDistance: u32, similarityScore: i32 };
+
+pub fn day1(path: []const u8) !DataInfo {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
@@ -21,7 +23,10 @@ pub fn day1(path: []const u8) !usize {
     var list2 = std.ArrayList(i32).init(allocator);
     defer list2.deinit();
 
-    var totalDistance: u64 = 0;
+    var list2_map = std.AutoHashMap(i32, u8).init(allocator);
+    defer list2_map.deinit();
+
+    var dataInfo = DataInfo{ .totalDistance = 0, .similarityScore = 0 };
 
     while (true) {
         reader.streamUntilDelimiter(arr.writer(), '\n', null) catch |err| switch (err) {
@@ -49,6 +54,13 @@ pub fn day1(path: []const u8) !usize {
         try list1.insert(list1.items.len, num1);
         try list2.insert(list2.items.len, num2);
 
+        const value = list2_map.get(num2);
+        if (value) |v| {
+            try list2_map.put(num2, v + 1);
+        } else {
+            try list2_map.put(num2, 1);
+        }
+
         arr.clearRetainingCapacity();
     }
 
@@ -56,16 +68,22 @@ pub fn day1(path: []const u8) !usize {
     std.mem.sort(i32, list2.items, {}, comptime std.sort.asc(i32));
 
     for (list1.items, 0..) |num, i| {
-        totalDistance += @abs(num - list2.items[i]);
+        dataInfo.totalDistance += @abs(num - list2.items[i]);
+
+        if (list2_map.get(num)) |v| {
+            dataInfo.similarityScore += num * v;
+        }
     }
 
-    return totalDistance;
+    return dataInfo;
 }
 
 test "day1" {
     var result = try day1("./src/input/day1.txt");
-    try expect(result == 2000468);
+    try expect(result.totalDistance == 2000468);
+    try expect(result.similarityScore == 18567089);
 
     result = try day1("./src/input/day1_small.txt");
-    try expect(result == 11);
+    try expect(result.totalDistance == 11);
+    try expect(result.similarityScore == 31);
 }
